@@ -183,8 +183,13 @@ static esp_err_t index_handler(httpd_req_t* req) {
     page += "<p align=center><IMG SRC='http://" + Camerafeed + ":81/stream' style='width:320px; transform:rotate(0deg);'></p><br/>";
 
     page += "<p align=center>";
-    page += "<button style=width:90px;height:30px onmousedown=getsend('right') ontouchstart=getsend('right') onmouseup=getsend('stop') >^</button>&nbsp;";
-    page += "<button style=width:90px;height:30px onmousedown=getsend('left') ontouchstart=getsend('left') onmouseup=getsend('stop') >^</button>";
+    page += "<button style=width:90px;height:30px onmousedown=getsend('left') ontouchstart=getsend('left') onmouseup=getsend('stop') >l</button>";
+    page += "<button style=width:90px;height:30px onmousedown=getsend('right') ontouchstart=getsend('right') onmouseup=getsend('stop') >r</button>&nbsp;";
+    page += "</p>";
+
+    page += "<p align=center>";
+    page += "<button style=width:90px;height:30px onmousedown=getsend('forward') ontouchstart=getsend('forward') onmouseup=getsend('stop') >f</button>";
+    page += "<button style=width:90px;height:30px onmousedown=getsend('back') ontouchstart=getsend('back') onmouseup=getsend('stop') >b</button>";
     page += "</p>";
 
     page += "<br>";
@@ -216,6 +221,20 @@ static esp_err_t left_handler(httpd_req_t* req) {
 
 static esp_err_t right_handler(httpd_req_t* req) {
     command = "right";
+
+    httpd_resp_set_type(req, "text/html");
+    return httpd_resp_send(req, "OK", 2);
+}
+
+static esp_err_t forward_handler(httpd_req_t* req) {
+    command = "forward";
+
+    httpd_resp_set_type(req, "text/html");
+    return httpd_resp_send(req, "OK", 2);
+}
+
+static esp_err_t back_handler(httpd_req_t* req) {
+    command = "back";
 
     httpd_resp_set_type(req, "text/html");
     return httpd_resp_send(req, "OK", 2);
@@ -270,6 +289,18 @@ void startCameraServer() {
         .method = HTTP_GET,
         .handler = right_handler,
         .user_ctx = NULL};
+    
+    httpd_uri_t forward_uri = {
+        .uri = "/forward",
+        .method = HTTP_GET,
+        .handler = forward_handler,
+        .user_ctx = NULL};
+    
+    httpd_uri_t back_uri = {
+        .uri = "/back",
+        .method = HTTP_GET,
+        .handler = back_handler,
+        .user_ctx = NULL};
 
     httpd_uri_t stop_uri = {
         .uri = "/stop",
@@ -313,6 +344,8 @@ void startCameraServer() {
         httpd_register_uri_handler(camera_httpd, &index_uri);
         httpd_register_uri_handler(camera_httpd, &left_uri);
         httpd_register_uri_handler(camera_httpd, &right_uri);
+        httpd_register_uri_handler(camera_httpd, &forward_uri);
+        httpd_register_uri_handler(camera_httpd, &back_uri);
         httpd_register_uri_handler(camera_httpd, &stop_uri);
         httpd_register_uri_handler(camera_httpd, &led_uri);
         httpd_register_uri_handler(camera_httpd, &buzzer_uri);

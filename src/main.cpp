@@ -229,6 +229,14 @@ void loop() {
         set_left_wheel(SPEED_MIN);
         set_right_wheel(0);
     }
+    if (command == "forward") {
+        set_left_wheel(SPEED_MIN);
+        set_right_wheel(SPEED_MIN);
+    }
+    if (command == "back") {
+        set_left_wheel(-SPEED_MIN);
+        set_right_wheel(-SPEED_MIN);
+    }
     if (switch_led) {
         if (led_state) {
             digitalWrite(LED_PIN, LOW);
