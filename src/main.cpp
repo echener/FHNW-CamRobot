@@ -34,8 +34,8 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define SERVOMAX 400  // This is the 'maximum' pulse length count (out of 4096)
 
 // Update those settings with the login information of you wifi
-#define ssid "wifi-ssid"
-#define password "wifi-password"
+#define ssid "frc"
+#define password "pwd01"
 
 // Those variables are used to control the servo controller
 // and to update the OLED display with some status
@@ -122,6 +122,8 @@ void setup() {
     Serial.begin(115200);
     delay(200);
 
+    Serial.println("Test");
+
     pinMode(LED_PIN, OUTPUT);
 
     blink();
@@ -189,7 +191,7 @@ void setup() {
     }
 
     // AP mode
-    WiFi.softAP("camera3", NULL);
+    WiFi.softAP("frc", NULL);
     Camerafeed = WiFi.softAPIP().toString().c_str();
     /*
     // or station mode
@@ -214,6 +216,7 @@ void setup() {
 }
 
 void loop() {
+    Serial.println("hallo");
     if (command == "stop") {
         set_left_wheel(0);
         set_right_wheel(0);
