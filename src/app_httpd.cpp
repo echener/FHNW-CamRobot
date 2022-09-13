@@ -177,8 +177,21 @@ static esp_err_t index_handler(httpd_req_t* req) {
         function updateSpeedSlider(slideAmount) {\
             var sliderDiv = document.getElementById('speedSliderAmount'); getsend('speed/' + slideAmount); sliderDiv.innerHTML = 'Speed: ' + slideAmount;}\
         function updateServoSlider(slideAmount) {\
-            var sliderDiv = document.getElementById('servoSliderAmount'); getsend('servo/' + slideAmount); sliderDiv.innerHTML = 'Servo: ' + slideAmount;}\
+            var sliderDiv = document.getElementById('servoSliderAmount'); getsend('servo/' + slideAmount); sliderDiv.innerHTML = 'Servo: ' + slideAmount;}\n\
     </script>";
+
+    page += 
+        "<script>\
+        window.addEventListener('keydown', steer,false); \n\
+        function steer(e) {\
+            var code = e.keyCode;\
+            switch (code) {\
+                case 37: getsend('left'); break;\
+                case 38: getsend('forward'); break;\
+                case 39: getsend('right'); break;\
+                case 40: getsend('back'); break;}}\
+        window.addEventListener('keyup', ()=>{getsend('stop');},false); \n\
+        </script>";
 
     page += "<p align=center><IMG SRC='http://" + Camerafeed + ":81/stream' style='width:320px; transform:rotate(0deg);'></p><br/>";
 
