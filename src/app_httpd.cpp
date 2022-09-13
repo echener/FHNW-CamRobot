@@ -30,6 +30,7 @@ extern String command;
 extern boolean switch_led;
 extern boolean buzzer;
 extern int servo_pos;
+extern int distance;
 
 typedef struct {
     size_t size;   // number of values used for filtering
@@ -191,6 +192,8 @@ static esp_err_t index_handler(httpd_req_t* req) {
                 case 39: getsend('right'); break;\
                 case 40: getsend('back'); break;}}\
         window.addEventListener('keyup', ()=>{getsend('stop');},false); \n\
+        function updateDistance(){fetch('/distance').then((result)=>{return result.text()}).then((content)=>{document.getElementById('distanceValue').innerHTML=content})}\
+        var intervalID = setInterval(updateDistance, 200);\
         </script>";
 
     page += "<p align=center><IMG SRC='http://" + Camerafeed + ":81/stream' style='width:320px; transform:rotate(0deg);'></p><br/>";
@@ -221,6 +224,9 @@ static esp_err_t index_handler(httpd_req_t* req) {
         String(servo_pos) +
         "</p>\
         </div><br/>";
+    page += "<div> align=center";
+    page += "<p>Distance: <span id='distanceValue'>3</span></p>";
+    page += "</div><br>";
 
     return httpd_resp_send(req, &page[0], strlen(&page[0]));
 }
@@ -270,6 +276,13 @@ static esp_err_t buzzer_handler(httpd_req_t* req) {
     buzzer = true;
     httpd_resp_set_type(req, "text/html");
     return httpd_resp_send(req, "OK", 2);
+}
+
+static esp_err_t distance_handler(httpd_req_t* req) {
+    // This solution is ugly, would it be possible to only send an integer?
+    String msg = String(distance);
+    httpd_resp_set_type(req, "text/html");
+    return httpd_resp_send(req, &msg[0], strlen(&msg[0]));
 }
 
 static esp_err_t servo_handler(httpd_req_t* req) {
@@ -350,6 +363,12 @@ void startCameraServer() {
         .method = HTTP_GET,
         .handler = stream_handler,
         .user_ctx = NULL};
+    
+    httpd_uri_t distance_uri = {
+        .uri = "/distance",
+        .method = HTTP_GET,
+        .handler = distance_handler,
+        .user_ctx = NULL};
 
     ra_filter_init(&ra_filter, 20);
     Serial.printf("Starting web server on port: '%d'", config.server_port);
@@ -363,6 +382,7 @@ void startCameraServer() {
         httpd_register_uri_handler(camera_httpd, &led_uri);
         httpd_register_uri_handler(camera_httpd, &buzzer_uri);
         httpd_register_uri_handler(camera_httpd, &servo_uri);
+        httpd_register_uri_handler(camera_httpd, &distance_uri);
 
         // httpd_register_uri_handler(stream_httpd, &stream_uri);
     }
