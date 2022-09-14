@@ -217,7 +217,7 @@ static esp_err_t index_handler(httpd_req_t* req) {
     page += "</p>";
     page +=
         "<div align=center>\
-        <input style = width:200px; height:30px type = 'range' min = '0' max = '100' step = '100' value = '" +
+        <input style = width:200px; height:30px type = 'range' min = '0' max = '100' step = '1' value = '" +
         String(servo_pos) +
         "' class = 'slider' id = 'servo' onchange = 'updateServoSlider(this.value)' >\
         <p id = 'servoSliderAmount'>Servo: " +
