@@ -39,6 +39,9 @@ VL53L0X distanceSensor;
 #define ssid "frc"
 #define password "pwd01"
 
+// Uncomment if you use the Distance Sensor
+#define DISTANCE_SENSOR
+
 // Those variables are used to control the servo controller
 // and to update the OLED display with some status
 // and some kind of debug information.
@@ -49,7 +52,7 @@ extern int speed = 85;
 extern boolean switch_led = false;
 extern boolean buzzer = false;
 extern int servo_pos = 0;
-extern int distance = 0;
+extern int distance = 8;
 
 boolean led_state = false;
 int current_servo_pos = 20;
@@ -144,11 +147,14 @@ void setup() {
     set_left_wheel(0);
     set_right_wheel(0);
 
+
+    #ifdef DISTANCE_SENSOR
     distanceSensor.setTimeout(500);
     if (!distanceSensor.init()) {
         Serial.println("Distance sensor was not found!");
     }
     distanceSensor.setMeasurementTimingBudget(200000);
+    #endif
 
     camera_config_t config;
     config.ledc_channel = LEDC_CHANNEL_0;
@@ -271,6 +277,8 @@ void loop() {
         buzzer = false;
     }
 
-    if (distanceSensor.readRangeSingleMillimeters() < 100) blink();
+    #ifdef DISTANCE_SENSOR
+    distance = distanceSensor.readRangeSingleMillimeters();
+    #endif
     //if (touchRead(13) < 40) blink();
 }

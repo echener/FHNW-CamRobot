@@ -193,7 +193,7 @@ static esp_err_t index_handler(httpd_req_t* req) {
                 case 40: getsend('back'); break;}}\
         window.addEventListener('keyup', ()=>{getsend('stop');},false); \n\
         function updateDistance(){fetch('/distance').then((result)=>{return result.text()}).then((content)=>{document.getElementById('distanceValue').innerHTML=content})}\
-        var intervalID = setInterval(updateDistance, 200);\
+        var intervalID = setInterval(updateDistance, 900);\
         </script>";
 
     page += "<p align=center><IMG SRC='http://" + Camerafeed + ":81/stream' style='width:320px; transform:rotate(0deg);'></p><br/>";
@@ -224,7 +224,7 @@ static esp_err_t index_handler(httpd_req_t* req) {
         String(servo_pos) +
         "</p>\
         </div><br/>";
-    page += "<div> align=center";
+    page += "<div align=center>";
     page += "<p>Distance: <span id='distanceValue'>3</span></p>";
     page += "</div><br>";
 
