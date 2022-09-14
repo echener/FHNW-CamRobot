@@ -3,12 +3,14 @@
 #include <WiFi.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <VL53L0X.h>
 
 #include "esp_camera.h"
 
 // The servo controller PCA9685 librarie is loaded and the servo controller itsef
 // is connected to the I2C bus.
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+VL53L0X distanceSensor;
 
 // Select camera model
 #define CAMERA_MODEL_AI_THINKER
@@ -37,6 +39,9 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define ssid "frc"
 #define password "pwd01"
 
+// Uncomment if you use the Distance Sensor
+#define DISTANCE_SENSOR
+
 // Those variables are used to control the servo controller
 // and to update the OLED display with some status
 // and some kind of debug information.
@@ -47,6 +52,7 @@ extern int speed = 85;
 extern boolean switch_led = false;
 extern boolean buzzer = false;
 extern int servo_pos = 0;
+extern int distance = 8;
 
 boolean led_state = false;
 int current_servo_pos = 20;
@@ -123,6 +129,7 @@ void setup() {
     delay(200);
 
     Serial.println("Test");
+    
 
     pinMode(LED_PIN, OUTPUT);
 
@@ -139,6 +146,15 @@ void setup() {
     delay(100);
     set_left_wheel(0);
     set_right_wheel(0);
+
+
+    #ifdef DISTANCE_SENSOR
+    distanceSensor.setTimeout(500);
+    if (!distanceSensor.init()) {
+        Serial.println("Distance sensor was not found!");
+    }
+    distanceSensor.setMeasurementTimingBudget(200000);
+    #endif
 
     camera_config_t config;
     config.ledc_channel = LEDC_CHANNEL_0;
@@ -260,4 +276,9 @@ void loop() {
         buzzOff();
         buzzer = false;
     }
+
+    #ifdef DISTANCE_SENSOR
+    distance = distanceSensor.readRangeSingleMillimeters();
+    #endif
+    //if (touchRead(13) < 40) blink();
 }
